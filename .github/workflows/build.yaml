@@ -11,7 +11,7 @@ jobs:
     uses: canonical/oci-factory/.github/workflows/Build-Rock.yaml@main
     with:
       oci-archive-name: "cowrie.rock"
-      rock-repo: rockcrafters/git-rock
+      rock-repo: rockcrafters/cowrie-rock
       rock-repo-commit: main
       rockfile-directory: cowrie
       arch-map: '{"amd64": ["ubuntu-latest"], "arm64": ["ubuntu-24.04-arm"]}'
@@ -41,7 +41,7 @@ jobs:
             "quay.io/skopeo/stable:v1.15.1" \
             copy --insecure-policy\
             oci-archive:cowrie.rock \
-            docker-daemon:git:latest
+            docker-daemon:cowrie:latest
 
           ver=$(docker run --rm -it -p 2222:2222 cowrie:0.1 exec pip show cowrie | sed -n "s/Version: \(.*\)/\1/p")
           tags="latest"
