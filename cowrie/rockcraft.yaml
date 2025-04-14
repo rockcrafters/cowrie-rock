@@ -1,7 +1,7 @@
 name: cowrie
 
 base: ubuntu@22.04 
-version: '0.1' 
+version: latest 
 summary: Cowrie SSH/Telnet Honeypot
 description: |
   Cowrie is a medium to high interaction SSH and Telnet honeypot designed to 
