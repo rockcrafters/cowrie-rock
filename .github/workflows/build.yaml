@@ -43,7 +43,7 @@ jobs:
             oci-archive:cowrie.rock \
             docker-daemon:git:latest
 
-          ver=$(docker run --rm -i git:latest exec git version | cut -d" " -f3)
+          ver=$(docker run --rm -it -p 2222:2222 cowrie:0.1 exec pip show cowrie | sed -n "s/Version: \(.*\)/\1/p")
           tags="latest"
           base="22.04"
           
