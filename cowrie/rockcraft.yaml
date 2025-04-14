@@ -1,0 +1,47 @@
+name: cowrie
+
+base: ubuntu@22.04 
+version: '0.1' 
+summary: Cowrie SSH/Telnet Honeypot
+description: |
+  Cowrie is a medium to high interaction SSH and Telnet honeypot designed to 
+  log brute force attacks and the shell interaction performed by the 
+  attacker. In medium interaction mode (shell) it emulates a UNIX system in 
+  Python, in high interaction mode (proxy) it functions as an SSH and telnet 
+  proxy to observe attacker behavior to another system.
+platforms: 
+  amd64:
+license: BSD-3-Clause
+
+environment:
+  COWRIE_STDOUT: "yes"
+
+parts:
+  cowrie:
+    # mirror installation on https://docs.cowrie.org/en/latest/INSTALL.html
+    plugin: python
+    python-requirements: 
+      - requirements.txt
+    source: https://github.com/cowrie/cowrie.git
+    source-type: git
+    stage-packages:
+      - python3-venv
+      - libssl-dev
+      - libffi-dev
+
+    override-build: |
+      craftctl default
+      groupadd --root ${CRAFT_PART_INSTALL} -g 4242 cowrie
+      useradd --root ${CRAFT_PART_INSTALL} -d /home/cowrie -g cowrie -u 4242 cowrie
+      
+      mkdir -p ${CRAFT_PART_INSTALL}/home/cowrie/cowrie
+      cp -r . ${CRAFT_PART_INSTALL}/home/cowrie/cowrie
+      chown -R 4242:4242 ${CRAFT_PART_INSTALL}/home/cowrie
+
+services:
+  cowrie:
+    command: bin/cowrie start 
+    working-dir: /home/cowrie/cowrie
+    override: replace
+    startup: enabled
+    user: cowrie
