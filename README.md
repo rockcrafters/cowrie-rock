@@ -1,4 +1,4 @@
-# git-rock
+# cowrie-rock
 Cowrie is a medium to high interaction SSH and Telnet honeypot designed to 
 log brute force attacks and the shell interaction performed by the 
 attacker. In medium interaction mode (shell) it emulates a UNIX system in 
