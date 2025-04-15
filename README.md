@@ -11,6 +11,6 @@ See: https://github.com/cowrie/cowrie
 
 Execute the honey-pot SSH instance on port 2222: 
 ```
-docker run --rm -it -p 2222:2222 cowrie:latest
+docker run --rm -it -p 2222:2222 ghcr.io/rockcrafters/cowrie-rock:latest
 ```
 <!-- ## TODO -->
