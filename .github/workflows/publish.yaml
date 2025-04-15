@@ -22,7 +22,7 @@ jobs:
       rock-repo: ${{ github.repository }}
       rock-repo-commit: main
       rockfile-directory: ${{ matrix.rock.location }}
-      oci-archive-name: ${{ matrix.rock.name }}_${{ matrix.rock.tag }}
+      oci-archive-name: ${{ matrix.rock.id }}
       arch-map: '{"amd64": ["ubuntu-latest"], "arm64": ["ubuntu-24.04-arm"]}'
 
   test:
@@ -32,7 +32,7 @@ jobs:
         rock: ${{ fromJSON(needs.tag-rocks.outputs.json_result) }}
     uses: canonical/oci-factory/.github/workflows/Test-Rock.yaml@main
     with:
-      oci-archive-name: ${{ matrix.rock.name }}_${{ matrix.rock.tag }}
+      oci-archive-name: ${{ matrix.rock.id }}
 
   upload:
     needs: [tag-rocks, test]
@@ -42,11 +42,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Download Rock
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.rock.id }}
+
+      - name: Generate Tags
+        id: generate-tags
+        run: |
+
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $PWD:/workdir -w /workdir \
+            "quay.io/skopeo/stable:v1.15.1" \
+            copy \
+            oci-archive:${{ matrix.rock.id }} \
+            docker-daemon:${{ matrix.rock.id }}:latest
+
+          version=$(${{ matrix.rock.version }})
+          
+          tags=()
+          for tag in $(echo "${{ toJSON(matrix.rock.tags) }}" | jq -r ".[]"); do
+            tag=$(echo $tag | env -i version="" base="${{ matrix.rock.base }}" envsubst)
+            tags+=$tag
+          done
+
+          echo "tags=\"${tags[*]}\"" >> $GITHUB_OUTPUT
+
       - name: Upload Rock to GHCR
         uses: canonical/oci-factory/.github/actions/upload-rock@main
         with:
-          artifact_name: ${{ matrix.rock.name }}_${{ matrix.rock.tag }}
-          tags: ${{ matrix.rock.tag }}
+          artifact_name: ${{ matrix.rock.id }}
+          tags: ${{ steps.generate-tags.outputs.tags }}
           name: ${{ github.repository }}
           registry: ghcr.io
           username: ${{ github.actor }}

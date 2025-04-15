@@ -22,11 +22,21 @@ jobs:
         run: |
           output="[]"
           while IFS= read -r -d '' file; do
+
+            # generate a unique build ID for the rock  
+            build_id=$(echo "$file" | md5sum | cut -d' ' -f1)
+
+            # extract embedded CI config
+            temp_file=$(mktemp)
+            grep '^#cd!' "$file" | sed 's/^#cd!//' > "$temp_file"
+
             name=$(yq '.name' "$file")
-            version=$(yq '.version' "$file")
             base=$(yq '.base' "$file")
             location=$(dirname "$file" | sed 's|^\./||')
             channel="edge"
+
+            tags=$(yq '.tags' "$temp_file")
+            version=$(yq '.version' "$temp_file")
 
             if [[ "$base" == "bare" ]]; then
               base=$(yq '.build-base' "$file")
@@ -34,19 +44,14 @@ jobs:
 
             base=$(echo "$base" | sed 's/[^0-9.]//g')
 
-            if [[ "$version" == "latest" ]]; then
-              tag="latest"
-              echo "::warning file=$file::Using 'latest' as version — tag set to 'latest'"
-            else
-              tag="${version}-${base}_${channel}"
-            fi
-
             entry=$(jq -n \
+              --arg id "$(build_id)" \
               --arg name "$name" \
+              --arg uuid "$name" \
               --arg version "$version" \
-              --arg tag "$tag" \
+              --argjson tags "$tags" \
               --arg location "$location" \
-              '{name: $name, version: $version, tag: $tag, location: $location}')
+              '{id: $id, name: $name, base: $base, version: $version, tags: $tags, location: $location}')
 
             output=$(jq ". + [ $entry ]" <<< "$output")
           done < <(find . -type f -name rockcraft.yaml -print0)
