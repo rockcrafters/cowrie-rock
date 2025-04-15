@@ -27,7 +27,7 @@ jobs:
             build_id=$(echo "$file" | md5sum | cut -d' ' -f1)
 
             # extract embedded CI config
-            temp_file=$(mktemp)
+            temp_file=$build_id
             grep '^#cd!' "$file" | sed 's/^#cd!//' > "$temp_file"
 
             name=$(yq '.name' "$file")
