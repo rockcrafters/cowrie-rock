@@ -56,7 +56,7 @@ jobs:
             "quay.io/skopeo/stable:v1.15.1" \
             copy \
             oci-archive:${{ matrix.rock.id }} \
-            docker-daemon:${{ matrix.rock.id }}:latest
+            docker-daemon:image:latest
 
           version=$(${{ matrix.rock.version }})
           
