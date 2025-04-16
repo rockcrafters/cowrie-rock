@@ -3,7 +3,7 @@ name: cowrie
 ## Config for CI/CD
 # tag templates: "latest", "$version" , "$version-${base}_stable", "$version-${base}_beta", "$version-${base}_edge", "$version-${base}_candidate", "$version-${base}_stable"
 #cd! tags: ["latest", "$version" , "$version-${base}_stable", "$version-${base}_beta", "$version-${base}_edge", "$version-${base}_candidate", "$version-${base}_stable"]
-#cd! version: docker run image:latest exec pip show cowrie | sed -n "s/Version: \(.*\)/\1/p"
+#cd! version: 'docker run image:latest exec pip show cowrie | sed -n "s/Version: \(.*\)/\1/p"'
 
 base: ubuntu@22.04 
 version: latest 
