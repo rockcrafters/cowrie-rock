@@ -16,6 +16,8 @@ description: |
   proxy to observe attacker behavior to another system.
 platforms: 
   amd64:
+  arm64:
+  
 license: BSD-3-Clause
 
 environment:
