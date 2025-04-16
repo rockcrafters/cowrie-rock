@@ -47,7 +47,7 @@ jobs:
             entry=$(jq -n \
               --arg id "$(build_id)" \
               --arg name "$name" \
-              --arg uuid "$name" \
+              --arg base "$base" \
               --arg version "$version" \
               --argjson tags "$tags" \
               --arg location "$location" \
