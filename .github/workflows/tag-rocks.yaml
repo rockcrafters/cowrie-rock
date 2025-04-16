@@ -45,7 +45,7 @@ jobs:
             base=$(echo "$base" | sed 's/[^0-9.]//g')
 
             entry=$(jq -n \
-              --arg id "$(build_id)" \
+              --arg id "$build_id" \
               --arg name "$name" \
               --arg base "$base" \
               --arg version "$version" \
